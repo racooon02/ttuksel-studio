@@ -1,4 +1,5 @@
 window.STUDIO = {
+  formEndpoint: "https://formspree.io/f/mgakkpwr",
   assets: {
     ttuksel: "assets/ttuksel.png", // reference/ttuksel-base-B-64.png, logical 64×64
     dalkong: "assets/dalkong.png", // existing draft, logical 64×64, source ×8

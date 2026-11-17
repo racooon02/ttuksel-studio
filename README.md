@@ -1,6 +1,6 @@
 # 뚝셀 스튜디오 공개 페이지
 
-`site/`만 정적 호스팅에 올리면 된다. 빌드·서버 저장·외부 폰트·분석 도구는 없다. [공개 페이지](https://racooon02.github.io/ttuksel-studio/)
+`site/`만 정적 호스팅에 올리면 된다. 정적 파일로 동작하며 신청은 Formspree로 보낸다. [공개 페이지](https://racooon02.github.io/ttuksel-studio/)
 
 ## 동기화
 
@@ -20,7 +20,7 @@
 
 ## 신청 흐름
 
-입력 → 신청서 카드 → 복사 → 인스타 DM 열기 → 사용자가 붙여넣고 전송. 제출만으로 접수·저장·DM 전송되지 않는다. 입력값은 textContent로 넣으며 저장소·쿠키·서버로 보내지 않는다. 새로고침하면 사라진다.
+입력 → Formspree로 전송 → 접수 완료 및 폼 초기화. 전송 실패 시 입력 내용을 보존한 신청서와 복사·인스타 DM 버튼을 표시한다. `data.js`의 `formEndpoint`에서 제출 주소를 관리한다. nickname, instagram, tool, problem, _subject, _gotcha를 FormData로 전송한다. 실제 전달 여부는 Formspree 대시보드에서 확인한다.
 
 ## 확인 결과
 
