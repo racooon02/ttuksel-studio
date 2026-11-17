@@ -1,0 +1,26 @@
+:root {
+  --outline: #070721;
+  --eye: #0c0a1f;
+  --navy: #0e0b36;
+  --shadow: #0c0a30;
+  --deep: #101133;
+  --wall: #16163b;
+  --night_blue: #1c2753;
+  --slate: #2a3b5f;
+  --furniture: #253d64;
+  --metal: #3f4e66;
+  --steel: #4a608a;
+  --cream_shadow: #dfd0a8;
+  --cream: #fcedcc;
+  --highlight: #faf6e2;
+  --beige: #e5d2af;
+  --wood: #c5b49a;
+  --coffee: #a5864e;
+  --blue: #84bbea;
+  --blue_dark: #3e86b7;
+  --gold: #fed73b;
+  --gold_shade: #e6b034;
+  --spark: #f3cd3d;
+  --gold_light: #fcf9d8;
+  --blush: #fec3b2;
+}
