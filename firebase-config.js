@@ -29,7 +29,7 @@ window.TTUKSEL_FIREBASE_CONFIG = {
  * (관리자 계정 로그인) 도입이 필요합니다. → README.md 참고.
  * 코드를 바꾸려면 이 상수만 교체하세요.
  */
-window.TTUKSEL_ADMIN_CODE = "ttuksel-admin";
+window.TTUKSEL_ADMIN_CODE = "bobo0713";
 
 /*
  * 기존 Formspree 엔드포인트 (병행 알림용으로 유지).
