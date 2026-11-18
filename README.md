@@ -1,34 +1,44 @@
-# 뚝셀 스튜디오 공개 페이지
+# 뚝셀 스튜디오 (공개 사이트 소스)
 
-`site/`만 정적 호스팅에 올리면 된다. 정적 파일로 동작하며 신청은 Formspree로 보낸다. [공개 페이지](https://racooon02.github.io/ttuksel-studio/)
+첫 스튜디오(다크 버전) 구조가 정본입니다: 제안 → 투표판 → 제작 보드 → 크레딧.
+호스팅은 GitHub Pages(정적), 데이터는 Firebase Firestore(무료 티어)를 씁니다.
+동기화 순서: 이 비공개 레포 `site/` 먼저 수정 → 공개 레포 `racooon02/ttuksel-studio`에 반영.
 
-## 동기화
+## 파일 구성
+- `index.html` — 헤더/통계/3단계/탭 4개(투표판·제작 보드·크레딧·관리)
+- `style.css`, `palette.css` — 남색 픽셀 톤
+- `firebase-config.js` — Firebase 설정값 + 관리 코드 상수 + Formspree 엔드포인트 상수
+- `app.js` — Firestore 실시간 구독, 투표(트랜잭션), 제안 제출, 관리 작업
+- `seed-data.js` — 동네 버전 data.js에서 이관한 기존 보드 데이터
+- `data.js` — 폐기된 껍데기 (하위 호환용, 아무도 읽지 않음)
+- `firestore.rules` — Firestore 보안 규칙 (콘솔에 붙여넣기)
+- `assets/` — 마스코트 등 기존 이미지 (ttuksel.png 등) 재사용
 
-비공개 레포의 `site/`를 기준으로 수정한다. 작업이 끝나면 `site/`의 내용을 공개 레포 `racooon02/ttuksel-studio`의 루트에도 같은 내용으로 반영하고, `main`에 커밋해 푸시한다. `review/`는 비공개 레포에만 보관한다. GitHub Pages는 공개 레포 `main` 브랜치의 루트에서 배포한다.
+## 2단계에서 할 일 (Firebase 연결 — 사용자가 직접)
+1. https://console.firebase.google.com 에서 프로젝트를 만듭니다.
+2. 빌드 > Firestore Database > "데이터베이스 만들기" (프로덕션 모드, 지역은 가까운 곳).
+3. 프로젝트 설정 > 일반 > "내 앱"에서 웹 앱(`</>`)을 추가하고,
+   발급된 `firebaseConfig` 값을 `firebase-config.js`의 자리표시자와 교체합니다.
+4. Firestore > 규칙 탭에 `firestore.rules` 내용을 붙여넣고 "게시"합니다.
+5. 관리 코드 변경: `firebase-config.js`의 `TTUKSEL_ADMIN_CODE` 상수만 바꾸면 됩니다.
+   (기본값은 임시값이니 실제 운영 전에 꼭 바꾸세요.)
+6. 이관 데이터 반영: 사이트 관리 탭에서 잠금을 풀고
+   "기존 보드 데이터 가져오기"를 한 번 누릅니다. 보안 규칙상 대기로 들어가니,
+   승인 → "제작 중으로" 순서로 옮기면 기존 보드와 같아집니다.
 
-## 미리 보기
+설정 전(자리표시자 상태)에는 사이트가 "연결 준비 중" 배너와 함께
+빈 목록으로 열립니다. 깨지지 않으니 안심하고 먼저 배포해도 됩니다.
 
-이 README가 있는 폴더에서 `python -m http.server 8765` 실행 후 http://localhost:8765 에 접속한다. `index.html`을 직접 열어도 페이지는 동작하지만, 자동 복사는 HTTPS 또는 localhost에서 사용하는 것을 권장한다. 복사가 막히면 직접 복사할 텍스트를 표시한다.
+## 데이터 모델 (컬렉션 `proposals`)
+`title, pain, author, status, votes, voters[], createdAt`
+status 전이: `pending`(대기) → `voting`(투표 중) → `building`(제작 중) → `done`(완성)
 
-## 내용 변경
-
-- `data.js`: 모든 PNG 경로, 이웃 소개, 제작 보드. `neighbors[].asset`이 null이면 준비 중 표시.
-- `palette.css`: 루트 palette.json에서 가져온 색. 새 색을 추가하지 않았다.
-- `assets/`: 기존 PNG의 원본 바이트를 복사했다. 원본 경로와 검증 기록은 비공개 레포의 `site/review/verification.json`에 보관한다.
-- 뚝셀은 정식 B 기준본. drafts/base_B_eyes_points 등 미승인 후속 시안은 사용하지 않았다. 달콩은 기존 초안으로 표시했다. 뜨또 설정과 PNG는 레포에 없어 제작하지 않았다.
-- 캐릭터는 논리 64px 기준 2배 또는 3배로 표시한다. 달콩 원본은 8배 출력 PNG이므로 128px 표시 시 논리 픽셀은 정확히 2px이다. 배경은 논리 270×480의 1배 또는 2배로 표시하고 창 영역에서 자른다. 유동 너비 확대나 보간은 사용하지 않는다.
-
-## 신청 흐름
-
-입력 → Formspree로 전송 → 접수 완료 및 폼 초기화. 전송 실패 시 입력 내용을 보존한 신청서와 복사·인스타 DM 버튼을 표시한다. `data.js`의 `formEndpoint`에서 제출 주소를 관리한다. nickname, instagram, tool, problem, _subject, _gotcha를 FormData로 전송한다. 실제 전달 여부는 Formspree 대시보드에서 확인한다.
-
-## 확인 결과
-
-ego-browser에서 390px 및 1440px 화면, 이미지 로딩, 가로 넘침 없음, 신청서 생성·내용 유지 수정·복사 성공 문구·새로고침 초기화·DM 링크를 확인했다. 실제 DM 전송은 하지 않았다. PNG 4개가 레포 원본과 바이트 단위로 같고 팔레트 외 색이 없다. 글꼴 가장자리의 브라우저 안티앨리어싱은 PNG 팔레트 검증 대상이 아니다.
-
-- review/mobile-390.png: 모바일 전체 화면
-- review/desktop-1440.png: 데스크톱 전체 화면
-- review/request-card.png: 신청서 결과
-- review/verification.json: 검증 기록
-
-실제 휴대폰·인스타 내장 브라우저 검증은 아직 하지 않았다. 공개 호스팅 시 review/ 폴더는 제외해도 된다.
+## 알려진 한계
+- 투표 중복 방지는 기기 토큰(localStorage) + 문서의 voters 배열 방식이라
+  토큰을 지우거나 다른 기기를 쓰면 재투표가 가능합니다. 어뷰징 완화 수준입니다.
+  voters 배열이 매우 커지면(문서 1MiB 제한) 투표가 막힐 수 있습니다.
+- 관리 비밀번호는 공개 코드 속 상수와 비교하는 UI 잠금일 뿐 실제 보안이
+  아닙니다. 규칙의 상태 변경·삭제도 신원 확인 없이 열려 있습니다.
+  스팸이 생기면 Firebase Auth(관리자 로그인) + 규칙 강화가 필요합니다.
+- Formspree 엔드포인트는 병행 알림용 상수로 남아 있습니다
+  (`firebase-config.js`의 `TTUKSEL_FORMSPREE_ENDPOINT`, 끄려면 빈 문자열).
