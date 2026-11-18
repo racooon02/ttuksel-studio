@@ -89,6 +89,18 @@
     var map = window.TTUKSEL_CHARACTERS || {};
     return map[name] ? name + " (" + map[name] + ")" : name;
   }
+
+  /* 자체 제작 표기: author가 이 표지값이면 시청자 제안이 아니라
+   * 뚝셀이 직접 낸 아이디어로 만든 도구다. 제작 보드·크레딧에서는
+   * "뚝셀 자체 제작"으로만 표시하고 제안자 표기와 섞지 않는다.
+   * (보안 규칙상 필드를 늘릴 수 없어 author 값으로 구분한다.) */
+  var SELF_LABEL = "뚝셀 자체 제작";
+  function isSelfMade(d) { return (d.author || "") === SELF_LABEL; }
+  function authorLine(d, creditStyle) {
+    if (isSelfMade(d)) return SELF_LABEL;
+    var name = charLabel(d.author || "익명");
+    return creditStyle ? ("아이디어: " + name) : ("제안 · " + name);
+  }
   function byStatus(s) { return docs.filter(function (d) { return d.status === s; }); }
   function tsMillis(d) {
     return d.createdAt && d.createdAt.toMillis ? d.createdAt.toMillis() : 0;
@@ -101,12 +113,12 @@
     if (text != null) n.textContent = text;
     return n;
   }
-  function cardMain(d, badgeText, badgeCls) {
+  function cardMain(d, badgeText, badgeCls, creditStyle) {
     var main = el("div", "card-main");
     if (badgeText) main.appendChild(el("span", "badge " + (badgeCls || ""), badgeText));
     main.appendChild(el("h3", null, d.title));
     if (d.pain) main.appendChild(el("p", "pain", d.pain));
-    main.appendChild(el("p", "author", "제안 · " + charLabel(d.author || "익명")));
+    main.appendChild(el("p", "author", authorLine(d, creditStyle)));
     return main;
   }
   function fillList(listEl, emptyEl, items, builder) {
@@ -145,13 +157,13 @@
 
     fillList($("board-list"), $("board-empty"), building, function (d) {
       var card = el("article", "card");
-      card.appendChild(cardMain(d, "제작 중", "building"));
+      card.appendChild(cardMain(d, "제작 중", "building", true));
       return card;
     });
 
     fillList($("credits-list"), $("credits-empty"), done, function (d) {
       var card = el("article", "card");
-      card.appendChild(cardMain(d, "완성", "done"));
+      card.appendChild(cardMain(d, "완성", "done", true));
       return card;
     });
 
