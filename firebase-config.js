@@ -22,14 +22,12 @@ window.TTUKSEL_FIREBASE_CONFIG = {
 };
 
 /*
- * 관리 탭 잠금 코드.
- * 주의: 이 값은 브라우저에서 누구나 읽을 수 있는 "UI 잠금"일 뿐,
- * 실제 보안이 아닙니다. Firestore 규칙만으로는 관리자 신원을
- * 구분할 수 없어서, 스팸·조작이 실제로 생기면 Firebase Auth
- * (관리자 계정 로그인) 도입이 필요합니다. → README.md 참고.
- * 코드를 바꾸려면 이 상수만 교체하세요.
+ * 관리자 계정 이메일.
+ * 비밀번호는 이 파일에 두지 않습니다. 관리 탭에서 입력한 비밀번호는
+ * Firebase Auth가 검증하고, Firestore 규칙이 로그인한 관리자 UID로만
+ * 상태 변경·삭제를 허용합니다.
  */
-window.TTUKSEL_ADMIN_CODE = "bobo0713";
+window.TTUKSEL_ADMIN_EMAIL = "kiyeonghun@gmail.com";
 
 /*
  * 기존 Formspree 엔드포인트 (병행 알림용으로 유지).

@@ -12,6 +12,7 @@
 <script src="seed-data.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js" defer></script>
 <script src="app.js" defer></script>
 </head>
 <body>
@@ -99,10 +100,10 @@
   <section id="panel-admin" class="panel" role="tabpanel" hidden>
     <div id="admin-lock">
       <h2>관리</h2>
-      <p>관리 코드가 필요해요. <span class="optional">(UI 잠금일 뿐 실제 보안은 아닙니다 — README 참고)</span></p>
+      <p>관리자 비밀번호가 필요해요.</p>
       <form id="admin-form">
-        <label for="admin-code">관리 코드</label>
-        <input id="admin-code" type="password" autocomplete="off" placeholder="코드 입력">
+        <label for="admin-code">관리자 비밀번호</label>
+        <input id="admin-code" type="password" autocomplete="off" placeholder="비밀번호 입력">
         <button class="button primary" type="submit">잠금 풀기</button>
         <p id="admin-status" role="status" aria-live="polite"></p>
       </form>

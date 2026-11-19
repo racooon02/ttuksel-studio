@@ -11,9 +11,10 @@
  *     즉 "완벽한 보안"이 아니라 어뷰징 완화 수준입니다.
  *   - 투표수와 voters 배열은 트랜잭션으로 함께 갱신해 어긋남을 줄입니다.
  *
- * 관리 비밀번호 (한계 명시):
- *   - firebase-config.js의 TTUKSEL_ADMIN_CODE와 비교하는 UI 잠금일 뿐,
- *     코드가 공개돼 있어 실제 보안이 아닙니다. firestore.rules 참고.
+ * 관리 비밀번호:
+ *   - Firebase Auth(관리자 계정) 로그인으로 실제 인증합니다.
+ *     비밀번호는 코드 어디에도 저장되지 않고, firestore.rules가
+ *     로그인한 관리자 UID로만 상태 변경·삭제를 허용합니다.
  */
 (function () {
   "use strict";
@@ -303,33 +304,47 @@
     });
   });
 
-  /* ---------- 관리 잠금 UI ---------- */
+  /* ---------- 관리 잠금 UI (Firebase Auth 로그인) ---------- */
   function wireAdmin(colRef) {
     var unlocked = false;
-    try { unlocked = sessionStorage.getItem("ttuksel_admin") === "1"; } catch (e) {}
     function apply() {
       $("admin-lock").hidden = unlocked;
       $("admin-body").hidden = !unlocked;
     }
     apply();
+
+    var auth = null;
+    try {
+      if (typeof firebase !== "undefined" && firebase.auth) auth = firebase.auth();
+    } catch (e) {}
+    if (auth) {
+      auth.onAuthStateChanged(function (user) {
+        unlocked = !!(user && user.email === window.TTUKSEL_ADMIN_EMAIL);
+        apply();
+      });
+    }
+
     $("admin-form").addEventListener("submit", function (ev) {
       ev.preventDefault();
-      if ($("admin-code").value === window.TTUKSEL_ADMIN_CODE) {
-        unlocked = true;
-        try { sessionStorage.setItem("ttuksel_admin", "1"); } catch (e) {}
-        $("admin-status").textContent = "";
-        apply();
-      } else {
-        $("admin-status").textContent = "코드가 맞지 않아요.";
+      if (!auth) {
+        $("admin-status").textContent = "지금은 연결 준비 중이라 로그인할 수 없어요.";
+        return;
       }
+      $("admin-status").textContent = "확인 중이에요…";
+      auth.signInWithEmailAndPassword(window.TTUKSEL_ADMIN_EMAIL, $("admin-code").value).then(function () {
+        $("admin-status").textContent = "";
+        $("admin-code").value = "";
+      }).catch(function () {
+        $("admin-status").textContent = "비밀번호가 맞지 않아요.";
+      });
     });
     $("admin-lock-btn").addEventListener("click", function () {
+      if (auth) auth.signOut();
       unlocked = false;
-      try { sessionStorage.removeItem("ttuksel_admin"); } catch (e) {}
       apply();
     });
     if (!colRef) {
-      // 오프라인 모드: 잠금은 풀려도 데이터 작업 버튼이 없으므로 안내만 남긴다.
+      // 오프라인 모드: 로그인해도 데이터 작업 버튼이 없으므로 안내만 남긴다.
       $("seed-import").addEventListener("click", function () {
         $("seed-status").textContent = "연결 준비 중이라 아직 가져올 수 없어요.";
       });

@@ -3,13 +3,11 @@ rules_version = '2';
  * 뚝셀 스튜디오 Firestore 보안 규칙
  * Firebase 콘솔 > Firestore Database > 규칙 탭에 붙여넣고 게시하세요.
  *
- * 전제와 한계 (중요):
- * - 이 사이트는 로그인이 없습니다. 그래서 규칙만으로는 "관리자"를
- *   신원으로 구분할 수 없습니다. 관리 탭의 비밀번호는 UI 잠금일 뿐이고,
- *   아래 규칙의 관리 경로(상태 변경·삭제)는 기술적으로는 누구나
- *   호출할 수 있는 상태입니다. 어뷰징 완화 수준으로 봐주세요.
- * - 스팸·조작이 실제로 발생하면 Firebase Auth(관리자 계정)를 붙이고
- *   규칙을 request.auth 기반으로 바꾸는 것이 다음 단계입니다.
+ * 관리자 인증:
+ * - 관리 탭은 Firebase Auth(관리자 계정)로 로그인합니다.
+ *   상태 변경·삭제는 아래 isAdmin()이 확인하는 관리자 UID로만
+ *   허용됩니다. 로그인하지 않은 방문자는 제안 생성과 투표만
+ *   할 수 있습니다.
  * - 투표는 "투표수 ±1 + 내 토큰 추가/제거"만 허용해, 임의의 숫자로
  *   투표수를 바꾸는 쓰기를 막습니다. (기기 토큰은 익명 값입니다)
  */
@@ -22,6 +20,11 @@ service cloud.firestore {
         && request.resource.data.votes >= 0
         && (request.resource.data.votes == resource.data.votes + 1
             || request.resource.data.votes == resource.data.votes - 1);
+    }
+
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.uid == 'CZdYSCf7JkeR4VICx55pQcazfdG3';
     }
 
     function isStatusChangeOnly() {
@@ -51,11 +54,11 @@ service cloud.firestore {
         && request.resource.data.author.size() <= 40
         && request.resource.data.keys().hasOnly(['title', 'pain', 'author', 'status', 'votes', 'voters', 'createdAt']);
 
-      // 수정: 투표 전용 변경 또는 관리 경로의 상태 전이만
-      allow update: if isVoteOnlyChange() || isStatusChangeOnly();
+      // 수정: 투표 전용 변경은 누구나, 상태 전이는 관리자만
+      allow update: if isVoteOnlyChange() || (isAdmin() && isStatusChangeOnly());
 
-      // 삭제: 관리 경로 (반려·삭제). 위 한계 설명 참고.
-      allow delete: if true;
+      // 삭제: 관리자만 (반려·삭제)
+      allow delete: if isAdmin();
     }
 
     // 그 외 경로는 전부 거부
