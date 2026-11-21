@@ -136,9 +136,9 @@
     var done = byStatus("done").sort(function (a, b) { return tsMillis(b) - tsMillis(a); });
     var pending = byStatus("pending").sort(function (a, b) { return tsMillis(a) - tsMillis(b); });
 
-    /* 통계: 올라온 제안 = 승인된 전체, 누적 투표 = 승인된 제안의 투표 합 */
+    /* 통계: 올라온 제안 = 아직 완성되지 않은 제안(투표 중+제작 중), 누적 투표 = 승인된 제안의 투표 합 */
     var approved = voting.concat(building, done);
-    $("stat-proposals").textContent = approved.length;
+    $("stat-proposals").textContent = voting.length + building.length;
     $("stat-votes").textContent = approved.reduce(function (s, d) { return s + (d.votes || 0); }, 0);
     $("stat-done").textContent = done.length;
 
