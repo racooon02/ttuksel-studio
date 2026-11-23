@@ -20,6 +20,7 @@
   "use strict";
 
   var $ = function (id) { return document.getElementById(id); };
+  var t = window.ttukselT || function (k) { return k; };
 
   /* ---------- 기기 토큰 ---------- */
   function deviceToken() {
@@ -58,7 +59,7 @@
     var form0 = $("idea-form");
     form0.addEventListener("submit", function (ev) {
       ev.preventDefault();
-      $("idea-status").textContent = "지금은 연결 준비 중이라 제안을 받을 수 없어요. 조금만 기다려 주세요.";
+      $("idea-status").textContent = t("offlineSubmitMsg");
     });
     wireAdmin(null); // 잠금 UI만 동작 (데이터 작업은 불가)
     return;
@@ -82,7 +83,7 @@
   }, function (err) {
     var b = $("offline-banner");
     b.hidden = false;
-    b.textContent = "연결에 문제가 있어 목록을 불러오지 못했어요. (" + err.code + ")";
+    b.textContent = t("connError", { code: err.code });
   });
 
   /* 캐릭터 이름이면 "이름 (MBTI)"로 표기 */
@@ -95,12 +96,12 @@
    * 뚝셀이 직접 낸 아이디어로 만든 도구다. 제작 보드·크레딧에서는
    * "뚝셀 자체 제작"으로만 표시하고 제안자 표기와 섞지 않는다.
    * (보안 규칙상 필드를 늘릴 수 없어 author 값으로 구분한다.) */
-  var SELF_LABEL = "뚝셀 자체 제작";
+  var SELF_LABEL = "뚝셀 자체 제작"; // Firestore에 저장되는 표지값 (비교 전용, 표시는 t("selfMade"))
   function isSelfMade(d) { return (d.author || "") === SELF_LABEL; }
   function authorLine(d, creditStyle) {
-    if (isSelfMade(d)) return SELF_LABEL;
-    var name = charLabel(d.author || "익명");
-    return creditStyle ? ("아이디어: " + name) : ("제안 · " + name);
+    if (isSelfMade(d)) return t("selfMade");
+    var name = charLabel(d.author || t("anon"));
+    return t(creditStyle ? "authorIdea" : "authorBy", { name: name });
   }
   function byStatus(s) { return docs.filter(function (d) { return d.status === s; }); }
   function tsMillis(d) {
@@ -149,7 +150,7 @@
       var btn = el("button", "vote-btn" + (voted ? " voted" : ""));
       btn.type = "button";
       btn.appendChild(el("span", "count", String(d.votes)));
-      btn.appendChild(document.createTextNode(voted ? "투표함" : "투표"));
+      btn.appendChild(document.createTextNode(voted ? t("votedBtn") : t("voteBtn")));
       btn.setAttribute("aria-pressed", voted ? "true" : "false");
       btn.addEventListener("click", function () { vote(d.id, btn); });
       card.appendChild(btn);
@@ -158,13 +159,13 @@
 
     fillList($("board-list"), $("board-empty"), building, function (d) {
       var card = el("article", "card");
-      card.appendChild(cardMain(d, "제작 중", "building", true));
+      card.appendChild(cardMain(d, t("badgeBuilding"), "building", true));
       return card;
     });
 
     fillList($("credits-list"), $("credits-empty"), done, function (d) {
       var card = el("article", "card");
-      card.appendChild(cardMain(d, "완성", "done", true));
+      card.appendChild(cardMain(d, t("badgeDone"), "done", true));
       return card;
     });
 
@@ -172,26 +173,28 @@
       var card = el("article", "card");
       var main = cardMain(d);
       main.appendChild(adminActions([
-        ["approve", "승인", "primary"],
-        ["reject", "반려(삭제)", "danger"]
+        ["approve", t("adminApprove"), "primary"],
+        ["reject", t("adminReject"), "danger"]
       ], d.id));
       card.appendChild(main);
       return card;
     });
 
     fillList($("manage-list"), null, approved, function (d) {
-      var label = { voting: "투표 중", building: "제작 중", done: "완성" }[d.status];
+      var label = { voting: t("statusVoting"), building: t("badgeBuilding"), done: t("badgeDone") }[d.status];
       var card = el("article", "card");
       var main = cardMain(d, label, d.status === "done" ? "done" : d.status === "building" ? "building" : "");
       var acts = [];
-      if (d.status === "voting") acts.push(["to-building", "제작 중으로", "primary"]);
-      if (d.status === "building") acts.push(["to-done", "완성으로", "primary"]);
-      acts.push(["remove", "삭제", "danger"]);
+      if (d.status === "voting") acts.push(["to-building", t("adminToBuilding"), "primary"]);
+      if (d.status === "building") acts.push(["to-done", t("adminToDone"), "primary"]);
+      acts.push(["remove", t("adminRemove"), "danger"]);
       main.appendChild(adminActions(acts, d.id));
       card.appendChild(main);
       return card;
     });
   }
+
+  window.__ttukselRenderAll = renderAll;
 
   function adminActions(list, id) {
     var wrap = el("div", "admin-actions");
@@ -241,17 +244,17 @@
     var author = $("idea-author").value.trim();
     if (!title || !author) return;
     var status = $("idea-status");
-    status.textContent = "보내는 중…";
+    status.textContent = t("sendingMsg");
     col.add({
       title: title, pain: pain, author: author,
       status: "pending", votes: 0, voters: [],
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     }).then(function () {
-      status.textContent = "제안이 도착했어요. 확인 후 투표판에 올라갑니다.";
+      status.textContent = t("submitOk");
       ev.target.reset();
       notifyFormspree(title, pain, author);
     }).catch(function (err) {
-      status.textContent = "전송에 실패했어요. 잠시 후 다시 시도해 주세요. (" + err.code + ")";
+      status.textContent = t("submitFail", { code: err.code });
     });
   });
 
@@ -277,7 +280,7 @@
     else if (action === "to-building") ref.update({ status: "building" }).catch(doneMsg);
     else if (action === "to-done") ref.update({ status: "done" }).catch(doneMsg);
     else if (action === "reject" || action === "remove") {
-      if (window.confirm("이 제안을 삭제할까요? 되돌릴 수 없어요.")) ref.delete().catch(doneMsg);
+      if (window.confirm(t("confirmDelete"))) ref.delete().catch(doneMsg);
     }
   }
 
@@ -296,11 +299,11 @@
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
     });
-    if (!jobs.length) { st.textContent = "이미 가져온 데이터예요. (중복 없음)"; return; }
+    if (!jobs.length) { st.textContent = t("seedDup"); return; }
     Promise.all(jobs).then(function () {
-      st.textContent = "기존 보드 데이터 " + jobs.length + "건을 대기 중으로 가져왔어요. 승인 후 제작 중으로 옮겨 주세요.";
+      st.textContent = t("seedOk", { n: jobs.length });
     }).catch(function (err) {
-      st.textContent = "가져오기에 실패했어요. (" + err.code + ")";
+      st.textContent = t("seedFail", { code: err.code });
     });
   });
 
@@ -327,15 +330,15 @@
     $("admin-form").addEventListener("submit", function (ev) {
       ev.preventDefault();
       if (!auth) {
-        $("admin-status").textContent = "지금은 연결 준비 중이라 로그인할 수 없어요.";
+        $("admin-status").textContent = t("adminOfflineMsg");
         return;
       }
-      $("admin-status").textContent = "확인 중이에요…";
+      $("admin-status").textContent = t("adminChecking");
       auth.signInWithEmailAndPassword(window.TTUKSEL_ADMIN_EMAIL, $("admin-code").value).then(function () {
         $("admin-status").textContent = "";
         $("admin-code").value = "";
       }).catch(function () {
-        $("admin-status").textContent = "비밀번호가 맞지 않아요.";
+        $("admin-status").textContent = t("adminWrongPw");
       });
     });
     $("admin-lock-btn").addEventListener("click", function () {
@@ -346,7 +349,7 @@
     if (!colRef) {
       // 오프라인 모드: 로그인해도 데이터 작업 버튼이 없으므로 안내만 남긴다.
       $("seed-import").addEventListener("click", function () {
-        $("seed-status").textContent = "연결 준비 중이라 아직 가져올 수 없어요.";
+        $("seed-status").textContent = t("seedOfflineMsg");
       });
     }
   }

@@ -16,9 +16,12 @@ h1, h2 { line-height: 1.25; }
 
 /* 헤더 */
 .hero { padding: 36px 18px 8px; max-width: 880px; margin: 0 auto; }
+.lang-toggle { display: flex; gap: 6px; justify-content: flex-end; margin-bottom: 12px; }
+.lang-btn { padding: 6px 14px; background: var(--wall); color: var(--cream); border: 3px solid var(--outline); box-shadow: 3px 3px 0 var(--shadow); font-size: .9rem; font-weight: 700; cursor: pointer; font-family: inherit; }
+.lang-btn.is-active { background: var(--gold); color: var(--eye); }
+.lang-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--shadow); }
 .hero-inner { display: flex; gap: 18px; align-items: center; }
-.duo { display: flex; gap: 10px; }
-.mascot { box-sizing: content-box; width: 128px; height: 128px; background: var(--deep); border: 3px solid var(--outline); box-shadow: 6px 6px 0 var(--shadow); }
+.mascot { width: 112px; height: 112px; background: var(--deep); border: 3px solid var(--outline); box-shadow: 6px 6px 0 var(--shadow); }
 .mascot-wrap { text-align: center; }
 .mascot-name { margin: 6px 0 0; color: var(--beige); font-size: .85rem; }
 .hero-en { font-family: "Courier New", monospace; font-weight: 700; letter-spacing: 2px; color: var(--blue); margin: 0; }

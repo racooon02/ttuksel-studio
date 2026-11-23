@@ -13,119 +13,121 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js" defer></script>
+<script src="i18n.js" defer></script>
 <script src="app.js" defer></script>
 </head>
 <body>
-<a class="skip" href="#main">본문으로 가기</a>
+<a class="skip" href="#main" data-i18n="skip">본문으로 가기</a>
 
 <header class="hero">
+  <div class="lang-toggle" role="group" aria-label="Language">
+    <button class="lang-btn is-active" type="button" data-lang="ko" aria-pressed="true">한국어</button>
+    <button class="lang-btn" type="button" data-lang="en" aria-pressed="false">EN</button>
+  </div>
   <div class="hero-inner">
-    <div class="duo">
-      <div class="mascot-wrap"><img class="mascot" src="assets/ttuksel.png" alt="작은 새싹을 달고 렌치를 든 뚝셀" width="128" height="128"><p class="mascot-name">뚝셀 (INFJ)</p></div>
-      <div class="mascot-wrap"><img class="mascot" src="assets/ttotto.png" alt="딸기 핀을 달고 마이크를 든 뜨또" width="128" height="128"><p class="mascot-name">뜨또 (ENTP)</p></div>
-    </div>
+    <div class="mascot-wrap"><img class="mascot" src="assets/ttuksel.png" data-i18n-alt="mascotAlt" alt="렌치를 든 둥근 큐브 뚝셀 (INFJ)" width="128" height="128"><p class="mascot-name" data-i18n="mascotName">뚝셀 (INFJ)</p></div>
     <div class="hero-copy">
       <p class="hero-en">ttuksel studio</p>
-      <h1>뚝셀 스튜디오</h1>
-      <p class="hero-tag">뚝딱뚝딱, 직접 만든 도구</p>
+      <h1 data-i18n="heroTitle">뚝셀 스튜디오</h1>
+      <p class="hero-tag" data-i18n="heroTag">뚝딱뚝딱, 직접 만든 도구</p>
     </div>
   </div>
-  <div class="stats" role="group" aria-label="스튜디오 현황">
-    <div class="stat"><span class="stat-icon" aria-hidden="true">◆</span><strong id="stat-proposals">0</strong><span>올라온 제안</span></div>
-    <div class="stat"><span class="stat-icon" aria-hidden="true">◆</span><strong id="stat-votes">0</strong><span>누적 투표</span></div>
-    <div class="stat"><span class="stat-icon" aria-hidden="true">◆</span><strong id="stat-done">0</strong><span>완성된 도구</span></div>
+  <div class="stats" role="group" data-i18n-aria="statsAria" aria-label="스튜디오 현황">
+    <div class="stat"><span class="stat-icon" aria-hidden="true">◆</span><strong id="stat-proposals">0</strong><span data-i18n="statProposals">올라온 제안</span></div>
+    <div class="stat"><span class="stat-icon" aria-hidden="true">◆</span><strong id="stat-votes">0</strong><span data-i18n="statVotes">누적 투표</span></div>
+    <div class="stat"><span class="stat-icon" aria-hidden="true">◆</span><strong id="stat-done">0</strong><span data-i18n="statDone">완성된 도구</span></div>
   </div>
   <ol class="steps">
-    <li><span class="step-no">01</span><strong>기능 제안</strong><p>원하는 도구를 제안함에 넣기</p></li>
-    <li><span class="step-no">02</span><strong>투표</strong><p>마음에 드는 제안에 한 표</p></li>
-    <li><span class="step-no">03</span><strong>제작 + 크레딧</strong><p>채택되면 영상으로 만들고 이름 공개</p></li>
+    <li><span class="step-no">01</span><strong data-i18n="step1Title">기능 제안</strong><p data-i18n="step1Desc">원하는 도구를 제안함에 넣기</p></li>
+    <li><span class="step-no">02</span><strong data-i18n="step2Title">투표</strong><p data-i18n="step2Desc">마음에 드는 제안에 한 표</p></li>
+    <li><span class="step-no">03</span><strong data-i18n="step3Title">제작 + 크레딧</strong><p data-i18n="step3Desc">채택되면 영상으로 만들고 이름 공개</p></li>
   </ol>
 </header>
 
-<div id="offline-banner" class="banner" hidden>
+<div id="offline-banner" class="banner" data-i18n="offlineBanner" hidden>
   지금은 연결 준비 중이에요. 제안과 투표는 곧 열립니다.
 </div>
 
 <main id="main">
-  <nav class="tabs" role="tablist" aria-label="스튜디오 메뉴">
-    <button class="tab is-active" role="tab" aria-selected="true" data-tab="vote" type="button">🗳 투표판</button>
-    <button class="tab" role="tab" aria-selected="false" data-tab="board" type="button">🔨 제작 보드</button>
-    <button class="tab" role="tab" aria-selected="false" data-tab="credits" type="button">★ 크레딧</button>
-    <button class="tab" role="tab" aria-selected="false" data-tab="admin" type="button">🔧 관리</button>
+  <nav class="tabs" role="tablist" data-i18n-aria="tabsAria" aria-label="스튜디오 메뉴">
+    <button class="tab is-active" role="tab" aria-selected="true" data-tab="vote" type="button">🗳 <span data-i18n="tabVote">투표판</span></button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="board" type="button">🔨 <span data-i18n="tabBoard">제작 보드</span></button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="credits" type="button">★ <span data-i18n="tabCredits">크레딧</span></button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="admin" type="button">🔧 <span data-i18n="tabAdmin">관리</span></button>
   </nav>
 
   <!-- 투표판 -->
   <section id="panel-vote" class="panel" role="tabpanel">
     <div class="idea-box">
       <p class="eyebrow">NEW IDEA</p>
-      <h2>만들었으면 하는 기능, 직접 제안하기</h2>
-      <p class="idea-note">채택돼서 완성되면 영상 엔딩 크레딧에 아래 이름이 그대로 올라가요.</p>
+      <h2 data-i18n="ideaTitle">만들었으면 하는 기능, 직접 제안하기</h2>
+      <p class="idea-note" data-i18n="ideaNote">채택돼서 완성되면 영상 엔딩 크레딧에 아래 이름이 그대로 올라가요.</p>
       <form id="idea-form">
-        <label for="idea-title">기능 이름</label>
-        <input id="idea-title" name="title" maxlength="60" required placeholder="예: 인스타 저장 영상 자동 분류기">
-        <label for="idea-pain">어떤 불편을 해결하나요? <span class="optional">(선택)</span></label>
-        <textarea id="idea-pain" name="pain" maxlength="500" rows="3" placeholder="어떤 상황에서, 어떻게 쓰면 좋을지 적어 주세요"></textarea>
-        <label for="idea-author">이름 또는 인스타그램 아이디 <span class="optional">(크레딧 표기용)</span></label>
-        <input id="idea-author" name="author" maxlength="40" required placeholder="예: @my_id" autocapitalize="none" spellcheck="false">
-        <button class="button primary" type="submit">제안 올리기</button>
+        <label for="idea-title" data-i18n="titleLabel">기능 이름</label>
+        <input id="idea-title" name="title" maxlength="60" required data-i18n-ph="titlePh" placeholder="예: 인스타 저장 영상 자동 분류기">
+        <label for="idea-pain"><span data-i18n="painLabel">어떤 불편을 해결하나요?</span> <span class="optional" data-i18n="optional">(선택)</span></label>
+        <textarea id="idea-pain" name="pain" maxlength="500" rows="3" data-i18n-ph="painPh" placeholder="어떤 상황에서, 어떻게 쓰면 좋을지 적어 주세요"></textarea>
+        <label for="idea-author"><span data-i18n="authorLabel">이름 또는 인스타그램 아이디</span> <span class="optional" data-i18n="creditNote">(크레딧 표기용)</span></label>
+        <input id="idea-author" name="author" maxlength="40" required data-i18n-ph="authorPh" placeholder="예: @my_id" autocapitalize="none" spellcheck="false">
+        <button class="button primary" type="submit" data-i18n="submitIdea">제안 올리기</button>
         <p id="idea-status" role="status" aria-live="polite"></p>
       </form>
     </div>
     <div class="list-head">
-      <h2>투표판</h2>
-      <p>투표가 많은 순으로 보여요. 한 기기에서 제안마다 한 표, 다시 누르면 취소돼요.</p>
+      <h2 data-i18n="voteHead">투표판</h2>
+      <p data-i18n="voteHeadDesc">투표가 많은 순으로 보여요. 한 기기에서 제안마다 한 표, 다시 누르면 취소돼요.</p>
     </div>
     <div id="vote-list" class="cards"></div>
-    <p id="vote-empty" class="empty" hidden>아직 올라온 제안이 없어요. 첫 제안을 남겨보세요.</p>
+    <p id="vote-empty" class="empty" data-i18n="voteEmpty" hidden>아직 올라온 제안이 없어요. 첫 제안을 남겨보세요.</p>
   </section>
 
   <!-- 제작 보드 -->
   <section id="panel-board" class="panel" role="tabpanel" hidden>
     <div class="list-head">
-      <h2>제작 보드</h2>
-      <p>투표로 채택돼서 지금 만들고 있는 도구들이에요.</p>
+      <h2 data-i18n="boardHead">제작 보드</h2>
+      <p data-i18n="boardHeadDesc">투표로 채택돼서 지금 만들고 있는 도구들이에요.</p>
     </div>
     <div id="board-list" class="cards"></div>
-    <p id="board-empty" class="empty" hidden>아직 제작 중인 도구가 없어요.</p>
+    <p id="board-empty" class="empty" data-i18n="boardEmpty" hidden>아직 제작 중인 도구가 없어요.</p>
   </section>
 
   <!-- 크레딧 -->
   <section id="panel-credits" class="panel" role="tabpanel" hidden>
     <div class="list-head">
-      <h2>완성 크레딧</h2>
-      <p>완성된 도구와, 시작을 함께한 제안자의 이름이에요.</p>
+      <h2 data-i18n="creditsHead">완성 크레딧</h2>
+      <p data-i18n="creditsHeadDesc">완성된 도구와, 시작을 함께한 제안자의 이름이에요.</p>
     </div>
     <div id="credits-list" class="cards"></div>
-    <p id="credits-empty" class="empty" hidden>아직 완성된 도구가 없어요. 첫 번째 이름을 기다려요.</p>
+    <p id="credits-empty" class="empty" data-i18n="creditsEmpty" hidden>아직 완성된 도구가 없어요. 첫 번째 이름을 기다려요.</p>
   </section>
 
   <!-- 관리 -->
   <section id="panel-admin" class="panel" role="tabpanel" hidden>
     <div id="admin-lock">
-      <h2>관리</h2>
-      <p>관리자 비밀번호가 필요해요.</p>
+      <h2 data-i18n="adminHead">관리</h2>
+      <p data-i18n="adminDesc">관리자 비밀번호가 필요해요.</p>
       <form id="admin-form">
-        <label for="admin-code">관리자 비밀번호</label>
-        <input id="admin-code" type="password" autocomplete="off" placeholder="비밀번호 입력">
-        <button class="button primary" type="submit">잠금 풀기</button>
+        <label for="admin-code" data-i18n="adminPwLabel">관리자 비밀번호</label>
+        <input id="admin-code" type="password" autocomplete="off" data-i18n-ph="adminPwPh" placeholder="비밀번호 입력">
+        <button class="button primary" type="submit" data-i18n="unlockBtn">잠금 풀기</button>
         <p id="admin-status" role="status" aria-live="polite"></p>
       </form>
     </div>
     <div id="admin-body" hidden>
       <div class="list-head">
-        <h2>대기 중 제안</h2>
-        <p>승인하면 투표판에 올라가고, 반려하면 삭제돼요.</p>
+        <h2 data-i18n="pendingHead">대기 중 제안</h2>
+        <p data-i18n="pendingDesc">승인하면 투표판에 올라가고, 반려하면 삭제돼요.</p>
       </div>
       <div id="pending-list" class="cards"></div>
-      <p id="pending-empty" class="empty" hidden>대기 중인 제안이 없어요.</p>
+      <p id="pending-empty" class="empty" data-i18n="pendingEmpty" hidden>대기 중인 제안이 없어요.</p>
       <div class="list-head">
-        <h2>올라온 제안 관리</h2>
-        <p>상태 이동: 투표 중 → 제작 중 → 완성. 삭제는 되돌릴 수 없어요.</p>
+        <h2 data-i18n="manageHead">올라온 제안 관리</h2>
+        <p data-i18n="manageDesc">상태 이동: 투표 중 → 제작 중 → 완성. 삭제는 되돌릴 수 없어요.</p>
       </div>
       <div id="manage-list" class="cards"></div>
       <div class="admin-tools">
-        <button id="seed-import" class="button secondary" type="button">기존 보드 데이터 가져오기 (이관)</button>
-        <button id="admin-lock-btn" class="button secondary" type="button">다시 잠그기</button>
+        <button id="seed-import" class="button secondary" type="button" data-i18n="seedBtn">기존 보드 데이터 가져오기 (이관)</button>
+        <button id="admin-lock-btn" class="button secondary" type="button" data-i18n="relockBtn">다시 잠그기</button>
         <p id="seed-status" role="status" aria-live="polite"></p>
       </div>
     </div>
@@ -133,10 +135,10 @@
 </main>
 
 <footer>
-  <p class="footer-brand">뚝셀 스튜디오</p>
-  <p>작은 불편이, 다음 도구로.</p>
-  <a href="https://www.instagram.com/ttuksel/" target="_blank" rel="noopener noreferrer">인스타그램에서 만나요 ↗</a>
+  <p class="footer-brand" data-i18n="footerBrand">뚝셀 스튜디오</p>
+  <p data-i18n="footerTag">작은 불편이, 다음 도구로.</p>
+  <a href="https://www.instagram.com/ttuksel/" target="_blank" rel="noopener noreferrer" data-i18n="footerIg">인스타그램에서 만나요 ↗</a>
 </footer>
-<noscript>제안과 투표를 보려면 자바스크립트를 켜주세요.</noscript>
+<noscript data-i18n="noscript">제안과 투표를 보려면 자바스크립트를 켜주세요.</noscript>
 </body>
 </html>
